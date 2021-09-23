@@ -38,3 +38,12 @@ The 'chunk' parameter is the number of FASTQ text lines loaded into memory from 
 
 The 'gzip_compression_level' has large effects on the rate at which an output file is saved. A setting of '1' allows rapid saving, and higher settings offer little gain in file compression.
 
+__
+
+Copyright and Disclaimer
+
+Copyright ©2021, Cory David Dunn. All Rights Reserved. Permission to use, copy, and distribute this software for educational, university-associated non-commercial research, and other not-for-profit purposes, without fee and without a signed licensing agreement, is hereby granted, provided that the above copyright notice, this paragraph and the subsequent two paragraphs appear within all copies and distributions. Contact the author at <cory.david.dunn@gmail.com> regarding the possibility of commercial licensing. 
+
+IN NO EVENT SHALL CORY DAVID DUNN (THE AUTHOR) BE LIABLE TO ANY PARTY FOR ANY DAMAGES OR LOST PROFITS THAT MAY ARISE FROM THE USE OF THIS SOFTWARE AND/OR ITS DOCUMENTATION, EVEN IF THE AUTHOR HAS BEEN NOTIFIED OF THE POTENTIAL OF SUCH DAMAGE. 
+
+THE AUTHOR SPECIFICALLY REFUSES TO ACKNOWLEDGE, AND ABSOLUTELY REJECTS, ANY WARRANTIES, INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND SUITABILITY FOR A PARTICULAR OBJECTIVE OR TASK. THE SOFTWARE AND ANY ASSOCIATED EXPLANATORY MATERIAL IS STRICTLY PROVIDED "AS IS". THE AUTHOR HAS NO COMMITMENT TO, OR ANY RESPONSIBILITY FOR, SERVICE, IMPROVEMENTS, CHANGES, OR COMMUNICATIONS RELATED TO THIS SOFTWARE OR ANY DERIVATIVE WORKS.
