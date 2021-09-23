@@ -20,7 +20,7 @@ optional arguments:
                         Gzip compression level (1-9). Default is '1' (most reasonable for speed and size). Choose '0' if working with
                         uncompressed files.
                         
-The purpose of this script is to remove likely duplicates before mapping FASTQ to a reference genome. 
+The purpose of this script is to remove FASTQ entries that may be duplicates before mapping FASTQ to a reference genome. 
 
 It is implemented in Python 3 (version 3.9.4) with a Pandas dependency (Pandas 1.2.4 tested here).
 
@@ -28,11 +28,9 @@ For cleaning one input file (here representing a single read), only enter one in
                        
 For single-end read sets (single input file), the script uses 40bp tags obtained from the 5' end of the read to determine whether the entry may be a duplicate. For paired-end read sets (two input files), the script takes 20bp tags obtained from the 5' end of each read set, then concatenates them to determine whether the entry may be a duplicate. 
 
-When likely duplicates are identified, that with the highest quality score is kept in the output file(s).
+When likely duplicates are identified, that with the highest quality score across the tag(s) is kept in the output file(s).
 
 Please note that if 'N' is found in any analyzed tag, that sequence is never saved in the output file.
-
-Important: To facilitate rapid removal, only 5' ends of reads are analyzed, and NOT the entire read sequence! Therefore, in some cases, NON-duplicates that map to the same location on a reference sequence will also be removed. However, for many purposes, like variant detection, this should not be a problem. 
 
 The 'shift parameter is the number of characters from the 5' end of input sequences from which tags should be extracted for duplicate determinations.
 
