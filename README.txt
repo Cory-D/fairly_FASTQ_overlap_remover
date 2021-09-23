@@ -32,6 +32,8 @@ When likely duplicates are identified, that with the highest quality score is ke
 
 Please note that if 'N' is found in any analyzed tag, that sequence is never saved in the output file.
 
+Important: To facilitate rapid removal, only 5' ends of reads are analyzed, and NOT the entire read sequence! Therefore, in some cases, NON-duplicates that map to the same location on a reference sequence will also be removed. However, for many purposes, like variant detection, this should not be a problem. 
+
 The 'shift parameter is the number of characters from the 5' end of input sequences from which tags should be extracted for duplicate determinations.
 
 The 'chunk' parameter is the number of FASTQ text lines loaded into memory from input files while writing to output files. The current setting (1,000,000) is roughly optimized for 16 GB of RAM, but can be altered, if needed, by the user.
