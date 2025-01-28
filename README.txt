@@ -22,7 +22,7 @@ optional arguments:
                         
 The purpose of this script is to remove FASTQ entries that may be duplicates before mapping FASTQ to a reference genome. 
 
-It is implemented in Python 3 (version 3.9.4) with a Pandas dependency (Pandas 1.2.4 tested here).
+This software is implemented in Python 3 (tested with version 3.12.3) with a Pandas dependency (tested with version Pandas 2.2.3).
 
 For cleaning one input file (here representing a single read), only enter one input file ('-1') . For cleaning paired reads, please enter two input files ('-1' and '-2' arguments.
                        
