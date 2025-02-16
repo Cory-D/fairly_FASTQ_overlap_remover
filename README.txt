@@ -15,7 +15,7 @@ optional arguments:
                         Shift, or offset, from the 5' end of reads when choosing tags for sequence comparison.
   -c --chunk
                         The number of lines of the input file(s) read into memory when writing output files lacking duplicates. Very
-                        roughly optimized for 16GB RAM and a read length of 150.
+                        roughly optimized for 32GB RAM and a read length of 150.
   -g --gzip_compression_level
                         Gzip compression level (1-9). Default is '1' (most reasonable for speed and size). Choose '0' if working with
                         uncompressed files.
