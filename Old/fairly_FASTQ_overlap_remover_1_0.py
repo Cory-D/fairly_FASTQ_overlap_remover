@@ -25,7 +25,7 @@ import gzip
 import argparse
 from threading import Thread
 
-version = '1.1'
+version = '1.0'
 
 def main():
 
@@ -36,45 +36,40 @@ def main():
     ap.add_argument('-1','--input_file_1',required=True,type=str,help="Input file 1 in FASTQ format.\n")
     ap.add_argument('-2','--input_file_2',required=False,type=str,default='NONE.FASTQ.GZ',help="Input file 2 in FASTQ format. Only required when mode is 'paired' \n")
     ap.add_argument('-s','--shift',required=False,type=int,default=0,help="Shift, or offset, from the 5' end of reads when choosing tags for sequence comparison.\n")
-    ap.add_argument('-c','--chunk',required=False,type=int,default=2_000_000,help="The number of lines of the input file(s) read into memory when writing output files lacking duplicates. Very roughly optimized for 32GB RAM and a read length of 150 (default is 2000000).\n")
+    ap.add_argument('-c','--chunk',required=False,type=int,default=1_000_000,help="The number of lines of the input file(s) read into memory when writing output files lacking duplicates. Very roughly optimized for 16GB RAM and a read length of 150.\n")
     ap.add_argument('-g','--gzip_compression_level',required=False,type=int,default=1,help="Gzip compression level (1-9). Default is '1' (most reasonable for speed and size). Choose '0' if working with uncompressed files.\n")
-    ap.add_argument('-o','--output_path',required=False,type=str,default='',help="Output path for analysis output.\n")
 
     args = vars(ap.parse_args())
 
     # Setting global variables
 
-    global INPUT_1
-    global INPUT_2
+    global INPUT_FILENAME_1
+    global INPUT_FILENAME_2
     global mode
     global offset
     global selected_chunk_size_in_sequences
     global compression_selected
     global mylogs
 
-    INPUT_1 = args['input_file_1']
-    INPUT_2 = args['input_file_2']
-    output_path = args['output_path']
+    INPUT_FILENAME_1 = args['input_file_1']
+    INPUT_FILENAME_2 = args['input_file_2']
     
     # Set single or paired mode based upon input files
 
-    if INPUT_2 == 'NONE.FASTQ.GZ':
+    if INPUT_FILENAME_2 == 'NONE.FASTQ.GZ':
         mode = 'single'
-    elif INPUT_2 != 'NONE.FASTQ.GZ':
+    elif INPUT_FILENAME_2 != 'NONE.FASTQ.GZ':
         mode = 'paired'
     
     offset = int(args['shift'])
     selected_chunk_size_in_sequences = args['chunk']
     compression_selected = args['gzip_compression_level']
 
-    filename_no_path_1 = INPUT_1.split('/')[-1]
-    filename_no_path_2 = INPUT_2.split('/')[-1]
+    basename1 = INPUT_FILENAME_1.rsplit( ".")[0]
+    basename2 = INPUT_FILENAME_2.rsplit( ".")[0]
 
-    basename1 = filename_no_path_1.rsplit( ".")[0]
-    basename2 = filename_no_path_2.rsplit( ".")[0]
-
-    OUTPUT_FILENAME_1 = output_path + basename1 + '_fairly_output' + '.FASTQ'
-    OUTPUT_FILENAME_2 = output_path + basename2 + '_fairly_output' + '.FASTQ'
+    OUTPUT_FILENAME_1 = basename1 + '_fairly_output' + '.FASTQ'
+    OUTPUT_FILENAME_2 = basename2+ '_fairly_output' + '.FASTQ'
 
     # Logging and streaming to console
 
@@ -86,7 +81,7 @@ def main():
     stream.setFormatter(streamformat)
     mylogs.addHandler(stream)
 
-    file = logging.FileHandler(output_path + 'fairly_FASTQ_overlap_remover.log')
+    file = logging.FileHandler(basename1 + '_output.log')
     mylogs.addHandler(file)
 
     mylogs.info('___\n')
@@ -100,17 +95,17 @@ def main():
 
     if compression_selected != 0:
 
-        OUTPUT_FILENAME_1 = output_path + basename1 + '_fairly_output' + '.FASTQ.gz'
-        OUTPUT_FILENAME_2 = output_path + basename2 + '_fairly_output' + '.FASTQ.gz'
+        OUTPUT_FILENAME_1 = OUTPUT_FILENAME_1 + '.gz'
+        OUTPUT_FILENAME_2 = OUTPUT_FILENAME_2 + '.gz'
 
     # Print settings to console and log
 
-    mylogs.info('Input filename 1: ' + INPUT_1)
+    mylogs.info('Input filename 1: ' + INPUT_FILENAME_1)
     if mode == 'paired': 
-        mylogs.info('Input filename 2: ' + INPUT_2)
+        mylogs.info('Input filename 2: ' + INPUT_FILENAME_2)
     if offset != 0:
         mylogs.info("Character offset from 5' end(s): " + str(offset))
-    if selected_chunk_size_in_sequences != 2_000_000:
+    if selected_chunk_size_in_sequences != 1_000_000:
         mylogs.info("'Chunk' size when writing clean output files: " + str(selected_chunk_size_in_sequences))
     if compression_selected != 1:
         mylogs.info("Compression level selected for gzip file (0 is no compression): " + str(compression_selected))
@@ -125,15 +120,15 @@ def main():
         
         # Here, directly take the 40bp tag and associated quality characters
         
-        merge_FASTA20_to_FASTA40, mergeQ20_to_Q40 = import_FASTQ_tags(INPUT_1,mode)
+        merge_FASTA20_to_FASTA40, mergeQ20_to_Q40 = import_FASTQ_tags(INPUT_FILENAME_1,mode)
 
         mylogs.info('40-mers retrieved from single provided file.')
         mylogs.info("Elapsed time: ~ " + str(int(time.time() - start_time)) + " seconds.")
 
     if mode == 'paired':
 
-        list_of_FASTA1_lines, list_of_FASTQ1_QUAL_lines = import_FASTQ_tags(INPUT_1,mode)
-        list_of_FASTA2_lines, list_of_FASTQ2_QUAL_lines = import_FASTQ_tags(INPUT_2,mode)
+        list_of_FASTA1_lines, list_of_FASTQ1_QUAL_lines = import_FASTQ_tags(INPUT_FILENAME_1,mode)
+        list_of_FASTA2_lines, list_of_FASTQ2_QUAL_lines = import_FASTQ_tags(INPUT_FILENAME_2,mode)
         
         # For paired set, merge the 20-bp tags into one string (FASTA and quality characters)
         
@@ -163,7 +158,7 @@ def main():
     global length_of_FASTQ_in_sequences
     length_of_FASTQ_in_sequences = len(FASTA_DF)
     
-    #FASTA_DF.to_csv(output_path + 'ONE_OFFSET.csv')
+    FASTA_DF.to_csv('ONE_OFFSET.csv')
 
     del merge_FASTA20_to_FASTA40
     del mergeQ20_to_Q40
@@ -190,21 +185,19 @@ def main():
 
     del FASTA_DF
 
+    mylogs.info('Writing output file(s).')
 
     # Write at least one file and...
 
-    file_1_write = Thread(target=write_clean_FASTQ_to_GZIP, args=(INPUT_1,OUTPUT_FILENAME_1))
+    file_1_write = Thread(target=write_clean_FASTQ_to_GZIP, args=(INPUT_FILENAME_1,OUTPUT_FILENAME_1))
     file_1_write.start()
 
-    mylogs.info('Writing output file(s) : ' + OUTPUT_FILENAME_1)
-
-    # ...if the FASTQ run was in paired mode, write the second file. Save simultaneously using threading.
+    # ...if the FASTQ run was in paired more, write the second file. Save simultaneously using threading.
 
     if mode == 'paired':
         
-        file_2_write = Thread(target=write_clean_FASTQ_to_GZIP, args=(INPUT_2,OUTPUT_FILENAME_2))
+        file_2_write = Thread(target=write_clean_FASTQ_to_GZIP, args=(INPUT_FILENAME_2,OUTPUT_FILENAME_2))
         file_2_write.start()
-        mylogs.info('Writing output file(s) : ' + OUTPUT_FILENAME_2)
 
     return()
 
